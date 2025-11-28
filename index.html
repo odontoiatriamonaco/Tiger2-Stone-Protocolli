@@ -8,7 +8,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root {
-    --accent: #008080; /* Un colore teal/verde ottanio per differenziarlo dal B1One */
+    --accent: #008080;
     --light-bg: #f0f8f8;
     --white: #ffffff;
     --gray: #dfe4ea;
@@ -23,28 +23,16 @@
     max-width: 100%;
     padding-bottom: 80px;
   }
-  /* Overlay Password */
   #password-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.85);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-    backdrop-filter: blur(5px);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 10000; backdrop-filter: blur(5px);
   }
   #password-box {
-    background: white;
-    padding: 30px 40px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    width: 90%;
-    max-width: 350px;
+    background: white; padding: 30px 40px; border-radius: 10px;
+    text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 90%; max-width: 350px;
   }
   #password-box h2 { margin-top: 0; color: var(--accent); }
   #password-input {
@@ -52,22 +40,68 @@
     border: 1px solid var(--gray); border-radius: 6px; font-size: 16px; box-sizing: border-box;
   }
   #password-box button { width: 100%; background-color: var(--accent); color: white; }
+  
+  /* Admin Panel */
+  .overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    justify-content: center; align-items: center;
+    z-index: 10000; backdrop-filter: blur(5px);
+  }
+  .overlay-box {
+    background: white; padding: 30px 40px; border-radius: 10px;
+    text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 90%; max-width: 450px;
+  }
+  #disclaimer-box { max-width: 600px; text-align: left; border-left: 6px solid #e74c3c; }
+  #validation-box { max-width: 500px; text-align: left; border-left: 6px solid #f39c12; }
 
-  /* Modal Info Tecnica */
+  .overlay-input {
+    width: 100%; padding: 10px; margin: 15px 0;
+    border: 1px solid var(--gray); border-radius: 6px; font-size: 16px; box-sizing: border-box;
+  }
+  .overlay-btn { width: 100%; background-color: var(--accent); color: white; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; margin-top: 5px; }
+  .overlay-btn.danger { background-color: #e74c3c; }
+  .overlay-btn.warning { background-color: #f39c12; color: #fff; }
+
+  #validation-list { list-style-type: none; padding: 0; margin: 15px 0; max-height: 200px; overflow-y: auto; }
+  #validation-list li { background: #fff3cd; color: #856404; padding: 8px 12px; margin-bottom: 5px; border-radius: 4px; border-left: 4px solid #e67e22; font-size: 14px; }
+
+  #admin-panel {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: white; z-index: 10002; overflow-y: auto;
+    padding: 20px; box-sizing: border-box;
+  }
+  .admin-header {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 20px;
+  }
+  .admin-controls {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;
+      background: #f9f9f9; padding: 15px; border-radius: 8px;
+  }
+  .admin-table-container { overflow-x: auto; }
+  table.admin-table {
+      width: 100%; border-collapse: collapse; font-size: 14px;
+  }
+  table.admin-table th, table.admin-table td {
+      border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top;
+  }
+  table.admin-table th { background-color: var(--accent); color: white; }
+  .editable-cell {
+      border: 1px solid transparent; padding: 4px; background: #fff; min-height: 20px;
+  }
+  .editable-cell:focus { border: 1px solid var(--accent); outline: none; background: #eef; }
+
+  /* Modal Info */
   #tech-modal {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
-    z-index: 10001;
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6); z-index: 10001;
     align-items: center; justify-content: center;
   }
   #tech-content {
-    background: white;
-    width: 90%; max-width: 500px;
-    border-radius: 10px;
-    padding: 25px;
-    position: relative;
+    background: white; width: 90%; max-width: 500px;
+    border-radius: 10px; padding: 25px; position: relative;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
   }
   #tech-close {
@@ -79,71 +113,46 @@
       border-bottom: 1px solid #eee; padding: 8px 0;
   }
   .tech-detail-label { font-weight: bold; color: #555; }
-
-  /* Badge Dedotto */
   .badge-deduced {
-      background-color: #fff3cd;
-      color: #856404;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.85em;
-      border: 1px solid #ffeeba;
-      display: inline-block;
-      margin-bottom: 10px;
-      font-weight: bold;
+      background-color: #fff3cd; color: #856404; padding: 4px 8px;
+      border-radius: 4px; font-size: 0.85em; border: 1px solid #ffeeba;
+      display: inline-block; margin-bottom: 10px; font-weight: bold;
   }
-
   header {
     background: linear-gradient(90deg, var(--accent), #004d4d);
-    color: white;
-    padding: 30px 0;
-    text-align: center;
-    border-bottom: 3px solid #003333;
-    border-radius: 0 0 10px 10px;
+    color: white; padding: 30px 0; text-align: center;
+    border-bottom: 3px solid #003333; border-radius: 0 0 10px 10px;
   }
   header h1 { margin: 0; font-size: 26px; letter-spacing: 1px; text-transform: uppercase; }
   header p { font-size: 14px; margin-top: 5px; opacity: 0.9; }
-
   .container {
-    max-width: 1000px;
-    margin: 30px auto;
-    padding: 20px 30px;
-    background: var(--white);
-    border-radius: 10px;
+    max-width: 1000px; margin: 30px auto; padding: 20px 30px;
+    background: var(--white); border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.06);
   }
-  
   .form-group { margin-bottom: 15px; }
   .form-group label { font-weight: 600; margin-bottom: 6px; display: block; font-size: 14px; }
   .form-group input, .form-group select {
     width: 100%; padding: 10px; margin-top: 4px; margin-bottom: 16px;
-    border: 1px solid var(--gray); border-radius: 6px; background: #fafafa; font-size: 16px;
-    box-sizing: border-box;
+    border: 1px solid var(--gray); border-radius: 6px; background: #fafafa;
+    font-size: 16px; box-sizing: border-box;
   }
-
   button {
     padding: 12px; font-size: 16px; font-weight: 600; border: none; border-radius: 6px;
     cursor: pointer; transition: all 0.3s ease; flex: 1;
   }
   button:hover { opacity: 0.9; }
-  
   .button-container {
     display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 20px 0;
   }
   .button-container button { flex: 1 1 45%; min-width: 140px; }
-  
   #elaboraBtn { background-color: #28a745; color: white; }
   #resetBtn { background-color: #dc3545; color: white; }
   #pdfBtn { background-color: #007bff; color: white; }
   #saveBtn { background-color: #ffc107; color: black; }
-
-  /* Card Impianto */
   .impianto-card {
-    background: #fff;
-    border-left: 5px solid var(--accent);
-    padding: 15px 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+    background: #fff; border-left: 5px solid var(--accent);
+    padding: 15px 20px; border-radius: 8px; margin-bottom: 20px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.08);
   }
   .impianto-header {
@@ -152,10 +161,9 @@
     border-bottom: 1px solid #eee; padding-bottom: 5px;
   }
   .collapse-btn {
-    background: none; border: none; color: var(--accent); font-size: 22px; cursor: pointer; padding: 0; width: auto; flex: none;
+    background: none; border: none; color: var(--accent); font-size: 22px;
+    cursor: pointer; padding: 0; width: auto; flex: none;
   }
-
-  /* Risultati */
   .result-row {
     background: #f9f9f9; border-left: 4px solid var(--accent);
     padding: 16px 20px; border-radius: 8px; margin-bottom: 20px;
@@ -164,16 +172,12 @@
   .result-block { font-size: 15px; margin-bottom: 8px; line-height: 1.4; }
   .dente { font-weight: bold; font-size: 22px; text-align: center; margin-bottom: 5px; color: var(--accent); }
   .densita { font-weight: bold; font-size: 20px; text-align: center; margin-bottom: 10px; }
-  
   .hidden { display: none; }
-  
-  /* Placeholder Immagini */
   .img-placeholder {
       display: flex; align-items: center; justify-content: center; flex-direction: column;
       background-color: #eee; border: 2px dashed #ccc; color: #777;
       padding: 20px; text-align: center; font-size: 12px; min-height: 150px; border-radius: 8px;
   }
-
   @media (max-width: 768px) {
     .result-row { display: flex !important; flex-direction: column !important; gap: 10px !important; }
     .result-row > div:nth-child(2) { width: 100% !important; height: 4px !important; }
@@ -182,54 +186,105 @@
 </head>
 <body>
 
-<!-- PASSWORD -->
-<div id="password-overlay">
-  <div id="password-box">
+<!-- STEP 1: PASSWORD -->
+<div id="password-overlay" class="overlay" style="display:flex;">
+  <div class="overlay-box">
     <h2>Accesso Riservato</h2>
     <p>Protocollo IDI Evolution</p>
-    <input type="password" id="password-input" placeholder="Password" autofocus>
-    <button onclick="checkPassword()">Accedi</button>
+    <input type="password" id="password-input" class="overlay-input" placeholder="Password" autofocus>
+    <button class="overlay-btn" onclick="checkPassword()">Accedi</button>
   </div>
 </div>
 
-<!-- MODAL SCHEDA TECNICA -->
+<!-- STEP 2: DISCLAIMER -->
+<div id="disclaimer-overlay" class="overlay">
+  <div class="overlay-box" id="disclaimer-box">
+    <h2 style="color:#e74c3c; text-align:center;">⚠️ DISCLAIMER IMPORTANTE</h2>
+    <div style="font-size:14px; line-height:1.5; margin-bottom:20px; max-height:300px; overflow-y:auto;">
+        <p>Questo software è uno strumento di supporto didattico e non sostituisce il giudizio clinico del professionista.</p>
+        <p><strong>L'autore, Dr. Maurizio Monaco, non si assume alcuna responsabilità per i risultati clinici derivanti dall'uso di questo applicativo.</strong></p>
+        <p>I protocolli qui riportati sono indicativi e potrebbero contenere imprecisioni.</p>
+        <p>L'utente accetta di utilizzare questo strumento sotto la propria esclusiva responsabilità.</p>
+    </div>
+    <button class="overlay-btn danger" onclick="acceptDisclaimer()">ACCETTA E PROSEGUI</button>
+  </div>
+</div>
+
+<!-- STEP 3: VALIDATION ERROR MODAL -->
+<div id="validation-overlay" class="overlay">
+  <div class="overlay-box" id="validation-box">
+    <h2 style="color:#f39c12; text-align:center;">⚠️ Dati Mancanti</h2>
+    <p>Per favore, compila i seguenti campi per procedere:</p>
+    <ul id="validation-list">
+        <!-- ERRORI INSERITI VIA JS -->
+    </ul>
+    <button class="overlay-btn warning" onclick="closeValidation()">Ho Capito, Correggo</button>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div id="admin-overlay" class="overlay">
+  <div class="overlay-box">
+    <h2>Admin Login</h2>
+    <input type="password" id="admin-password-input" class="overlay-input" placeholder="Password Admin">
+    <button class="overlay-btn" onclick="checkAdminPassword()">Entra</button>
+    <button class="overlay-btn" onclick="closeAdminLogin()" style="margin-top:10px; background:#999;">Annulla</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel">
+    <div class="admin-header">
+        <h2>🛠️ Editor Protocolli</h2>
+        <div>
+            <button onclick="saveAdminChanges()" style="background:#28a745; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer;">💾 Salva</button>
+            <button onclick="closeAdminPanel()" style="background:#dc3545; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; margin-left:10px;">Chiudi</button>
+        </div>
+    </div>
+    <div class="admin-controls">
+        <div class="form-group" style="flex:1; min-width:200px;">
+            <label>Seleziona Impianto:</label>
+            <select id="admin-tipo" onchange="renderAdminTable()"><option value="Tiger2">Tiger 2</option><option value="Stone">Stone</option></select>
+        </div>
+        <div class="form-group" style="flex:1; min-width:200px;">
+            <label>Seleziona Diametro:</label>
+            <select id="admin-diametro" onchange="renderAdminTable()"></select>
+        </div>
+        <div style="width:100%; margin-top:10px;">
+            <button onclick="resetToFactorySettings()" style="background:#f39c12; color:white; padding:8px; border:none; border-radius:5px; cursor:pointer; font-size:12px;">⚠️ Ripristina Originali</button>
+        </div>
+    </div>
+    <div class="admin-table-container">
+        <table class="admin-table">
+            <thead><tr><th>Densità</th><th>Carico</th><th>Anatomia</th><th>Sequenza</th><th>Note</th></tr></thead>
+            <tbody id="admin-table-body"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- TECH MODAL -->
 <div id="tech-modal">
   <div id="tech-content">
     <span id="tech-close" onclick="closeTechModal()">&times;</span>
     <h3 id="tech-title" style="color:var(--accent); margin-top:0;">Scheda Tecnica</h3>
-    <div id="tech-body">
-      <!-- Contenuto dinamico -->
-    </div>
+    <div id="tech-body"></div>
   </div>
 </div>
 
 <header>
   <h1>Protocollo Chirurgico</h1>
+  <p style="font-weight:bold; color:#eee;">Ideato dal Dr. Maurizio Monaco</p>
   <p>IDI Evolution: Tiger 2 & Stone</p>
-  <p style="font-size:12px; margin-top:5px; color: #ddd;">Strumento di supporto alla pianificazione implantare</p>
 </header>
 
 <div class="container">
-  <div class="form-group">
-    <label for="nome">Paziente (Cognome e Nome):</label>
-    <input type="text" id="nome" placeholder="Es. Rossi Mario">
-  </div>
-  
-  <div class="form-group">
-    <label for="impianti">Numero di impianti da inserire:</label>
+  <div class="form-group"><label>Paziente (Cognome e Nome): <span style="color:red">*</span></label><input type="text" id="nome" placeholder="Es. Rossi Mario"></div>
+  <div class="form-group"><label>Numero di impianti:</label>
     <select id="impianti" onchange="creaCampiImpianti()">
-      <option value="">-- Seleziona --</option>
-      <option value="1">1</option>
-      <option value="2">2</option>
-      <option value="3">3</option>
-      <option value="4">4</option>
-      <option value="5">5</option>
-      <option value="6">6</option>
+      <option value="">-- Seleziona --</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option>
     </select>
   </div>
-
   <div id="impianti-container"></div>
-
   <div class="button-container">
     <input type="file" id="fileInput" accept=".json" style="display:none" onchange="caricaDati(event)">
     <button onclick="document.getElementById('fileInput').click()" style="background:#6c757d; color:white;">📂 Carica Dati</button>
@@ -238,647 +293,527 @@
     <button id="resetBtn" onclick="resetta()">RESET</button>
     <button id="pdfBtn" onclick="esportaPDF()">ESPORTA PDF</button>
   </div>
-
-  <div id="output">
-    <p style="text-align: center; color: #777; font-style: italic; margin-top:30px;">
-      Compila i campi sopra e premi "ELABORA" per visualizzare il protocollo di fresatura.
-    </p>
-  </div>
+  <div id="output"><p style="text-align: center; color: #777; margin-top:30px;">Compila TUTTI i campi e premi "ELABORA".</p></div>
 </div>
 
-<!-- Footer Fisso -->
+<div style="position: fixed; bottom: 10px; left: 10px; z-index: 999;">
+    <button onclick="openAdminLogin()" style="background-color: #555; color: white; padding: 8px 14px; border-radius: 30px; font-weight: bold; font-size: 13px;">🛠️ Admin</button>
+</div>
 <div style="position: fixed; bottom: 10px; right: 10px; z-index: 999;">
-  <button onclick="alert('Inviare email a odontoiatria.monaco@gmail.com')" style="background-color: #008080; color: white; padding: 8px 14px; border-radius: 30px; font-weight: bold; font-size: 13px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
-    📬 Contatti
-  </button>
+  <button onclick="alert('Inviare email a odontoiatria.monaco@gmail.com')" style="background-color: #008080; color: white; padding: 8px 14px; border-radius: 30px; font-weight: bold; font-size: 13px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">📬 Contatti</button>
 </div>
 
 <script>
-// --- LOGICA DI ACCESSO ---
-function checkPassword() {
-  const pwd = document.getElementById('password-input').value;
-  if (pwd === "Martina07") { 
-    document.getElementById('password-overlay').style.display = 'none';
-  } else {
-    alert('Password errata.');
-    document.getElementById('password-input').value = "";
-  }
-}
-document.getElementById('password-input').addEventListener('keyup', (e) => {
-    if (e.key === "Enter") checkPassword();
-});
+// --- GLOBALS & DB ---
+let protocolDB = {};
 
-// --- GESTIONE MODAL TECNICO ---
-function openTechModal(tipo, diametro) {
-    const modal = document.getElementById('tech-modal');
-    const title = document.getElementById('tech-title');
-    const body = document.getElementById('tech-body');
-    
-    title.innerText = `Scheda Tecnica: ${tipo} Ø ${diametro}`;
-    
-    let content = "";
-    
-    if (tipo === 'Stone') {
-        let platformColor = "";
-        let bodyDiam = "";
-        let platformDiam = "";
-        
-        // Dati dalla scheda tecnica Stone/Stone TC
-        if (diametro === '3.5') { platformColor = "#f1c40f"; bodyDiam = "3.0 mm"; platformDiam = "3.5 mm (Yellow)"; }
-        else if (diametro === '3.75') { platformColor = "#3498db"; bodyDiam = "3.2 mm"; platformDiam = "4.0 mm (Blue)"; }
-        else if (diametro === '4.0') { platformColor = "#3498db"; bodyDiam = "3.2 mm"; platformDiam = "4.0 mm (Blue)"; }
-        else if (diametro === '5.0') { platformColor = "#2ecc71"; bodyDiam = "4.0 mm"; platformDiam = "5.0 mm (Green)"; }
-        else if (diametro === '6.0') { platformColor = "#e91e63"; bodyDiam = "5.0 mm"; platformDiam = "6.0 mm (Pink)"; }
-        
-        content = `
-            <div style="margin-bottom:15px; border-left: 4px solid ${platformColor}; padding-left:10px;">
-                <p><strong>Caratteristiche:</strong> Inserto alloplastico versatile (ampio spettro minerale).</p>
-                <p><strong>Superficie:</strong> Osteorapid (fino a 0.7-1mm dal bordo).</p>
-                <p><strong>Collo:</strong> Triplice microfilettatura sincronizzata per stabilità corticale.</p>
-            </div>
-            <div class="tech-detail-row"><span class="tech-detail-label">Diametro Testa (Spire):</span> <span>${diametro} mm</span></div>
-            <div class="tech-detail-row"><span class="tech-detail-label">Diametro Corpo:</span> <span>${bodyDiam}</span></div>
-            <div class="tech-detail-row"><span class="tech-detail-label">Piattaforma Protesica:</span> <span style="color:${platformColor === '#f1c40f' ? '#d4ac0d' : platformColor}; font-weight:bold;">${platformDiam}</span></div>
-        `;
-    } else {
-        // TIGER 2
-        let platformColor = "#3498db"; // Default Blue
-        let bodyDiam = "";
-        let platformDiam = "4.0 mm (Blue)";
-        let headDiam = diametro; // Di base la testa corrisponde al nominale
+window.onload = function() { loadProtocols(); };
 
-        // Dati dalla scheda tecnica Tiger 2
-        if (diametro === '3.8') { 
-            platformColor = "#3498db"; 
-            bodyDiam = "3.1 mm"; 
-            headDiam = "4.0 mm";
-            platformDiam = "4.0 mm (Blue)"; 
-        }
-        else if (diametro === '4.3') { 
-            platformColor = "#3498db"; 
-            bodyDiam = "3.6 mm"; 
-            headDiam = "4.3 mm";
-            platformDiam = "4.0 mm (Blue)"; 
-        }
-        else if (diametro === '4.8') { 
-            platformColor = "#3498db"; 
-            bodyDiam = "4.1 mm"; 
-            headDiam = "4.8 mm";
-            platformDiam = "4.0 mm (Blue)"; 
-        }
-        else if (diametro === '5.3') { 
-            platformColor = "#2ecc71"; 
-            bodyDiam = "4.6 mm"; 
-            headDiam = "5.3 mm";
-            platformDiam = "5.0 mm (Green)"; 
-        }
-
-        content = `
-            <div style="margin-bottom:15px; border-left: 4px solid ${platformColor}; padding-left:10px;">
-                <p><strong>Caratteristiche:</strong> Ideale per osso D3/D4 e siti post-estrattivi (perimetro cilindro-conico).</p>
-                <p><strong>Design:</strong> Spiralatura a doppio principio (passo rapido). Spire profonde per massima stabilità primaria.</p>
-            </div>
-            <div class="tech-detail-row"><span class="tech-detail-label">Diametro Testa (Spire):</span> <span>${headDiam}</span></div>
-            <div class="tech-detail-row"><span class="tech-detail-label">Diametro Corpo:</span> <span>${bodyDiam}</span></div>
-            <div class="tech-detail-row"><span class="tech-detail-label">Piattaforma Protesica:</span> <span style="color:${platformColor === '#2ecc71' ? '#27ae60' : platformColor}; font-weight:bold;">${platformDiam}</span></div>
-        `;
-    }
-    
-    body.innerHTML = content;
-    modal.style.display = 'flex';
+function loadProtocols() {
+    const stored = localStorage.getItem('idi_protocols_v1');
+    if (stored) { protocolDB = JSON.parse(stored); }
+    else { initDefaultProtocols(); }
 }
 
-function closeTechModal() {
-    document.getElementById('tech-modal').style.display = 'none';
+function resetta() {
+  document.getElementById('impianti').value = '';
+  document.getElementById('impianti-container').innerHTML = '';
+  document.getElementById('output').innerHTML = '<p style="text-align: center; margin-top:30px; color:#777;">In attesa di elaborazione...</p>';
 }
 
-// --- GENERAZIONE INTERFACCIA DINAMICA ---
+function initDefaultProtocols() {
+    protocolDB = {};
+    const types = ['Tiger2', 'Stone'];
+    const diams = { 'Tiger2': ['3.8', '4.3', '4.8', '5.3'], 'Stone': ['3.5', '3.75', '4.0', '5.0', '6.0'] };
+    const densities = ['D1', 'D2', 'D3', 'D4'];
+    const loads = ['si', 'no']; 
+    const jaws = ['mascella', 'mandibola'];
+
+    types.forEach(t => {
+        diams[t].forEach(d => {
+            densities.forEach(dens => {
+                loads.forEach(l => {
+                    jaws.forEach(j => {
+                        const res = getDefaultProtocolData(t, d, dens, l, j);
+                        const key = genKey(t, d, dens, l, j);
+                        protocolDB[key] = { seq: res.fresa, note: res.note, deduced: res.isDeduced };
+                    });
+                });
+            });
+        });
+    });
+}
+
 function creaCampiImpianti() {
   const num = document.getElementById('impianti').value;
   const container = document.getElementById('impianti-container');
   container.innerHTML = '';
   if (!num) return;
 
+  let denteOptions = '<option value="">-- Seleziona --</option>';
+  [11,12,13,14,15,16,17,18,21,22,23,24,25,26,27,28,31,32,33,34,35,36,37,38,41,42,43,44,45,46,47,48].forEach(n => { denteOptions += `<option value="${n}">${n}</option>`; });
+
   for (let i = 0; i < num; i++) {
     const card = document.createElement('div');
     card.className = 'impianto-card';
-    
-    // HTML della card
     card.innerHTML = `
-      <div class="impianto-header">
-        <span>Impianto ${i + 1}</span>
-        <button class="collapse-btn" onclick="toggleCard(this)">−</button>
-      </div>
+      <div class="impianto-header"><span>Impianto ${i + 1}</span><button class="collapse-btn" onclick="toggleCard(this)">−</button></div>
       <div class="impianto-content">
-        <!-- DENTE -->
-        <div class="form-group">
-          <label>Posizione (Dente):</label>
-          <select id="dente_${i}">
-            <option value="">-- Seleziona --</option>
-            ${[11,12,13,14,15,16,17,18,21,22,23,24,25,26,27,28,31,32,33,34,35,36,37,38,41,42,43,44,45,46,47,48].map(n => `<option value="${n}">${n}</option>`).join('')}
-          </select>
-        </div>
-
-        <!-- DENSITÀ -->
-        <div class="form-group">
-          <label>Densità Ossea (HU o Classe):</label>
+        <div class="form-group"><label>Posizione (Dente): <span style="color:red">*</span></label><select id="dente_${i}">${denteOptions}</select></div>
+        <div class="form-group"><label>Densità Ossea: <span style="color:red">*</span></label>
           <div style="display:flex; gap:10px; margin-bottom:10px;">
              <label><input type="radio" name="mode_${i}" value="hu" checked onclick="toggleInputMode(${i})"> Hounsfield</label>
              <label><input type="radio" name="mode_${i}" value="class" onclick="toggleInputMode(${i})"> Classe (D1-D4)</label>
           </div>
           <input type="number" id="hu_${i}" placeholder="Valore HU (es. 850)">
-          <select id="class_${i}" style="display:none;" onchange="syncHuFromClass(${i})">
-            <option value="">-- Seleziona Classe --</option>
-            <option value="D1">D1 (>1250 HU)</option>
-            <option value="D2">D2 (850-1250 HU)</option>
-            <option value="D3">D3 (350-850 HU)</option>
-            <option value="D4">D4 (<350 HU)</option>
-          </select>
+          <select id="class_${i}" style="display:none;" onchange="syncHuFromClass(${i})"><option value="">-- Seleziona --</option><option value="D1">D1 (>1150)</option><option value="D2">D2 (850-1150)</option><option value="D3">D3 (400-850)</option><option value="D4">D4 (<400)</option></select>
         </div>
-
-        <!-- TIPO IMPIANTO (TIGER 2 / STONE) -->
-        <div class="form-group">
-          <label>Linea Implantare:</label>
-          <select id="tipo_${i}" onchange="aggiornaDiametri(${i})">
-            <option value="Tiger2">IDI Tiger 2</option>
-            <option value="Stone">IDI Stone</option>
-          </select>
-        </div>
-
-        <!-- DIAMETRO -->
-        <div class="form-group">
-          <label>Diametro (mm):</label>
-          <select id="diametro_${i}" onchange="aggiornaLunghezze(${i})">
-            <!-- Popolato via JS -->
-          </select>
-        </div>
-
-        <!-- LUNGHEZZA -->
-        <div class="form-group">
-          <label>Lunghezza (mm):</label>
-          <select id="lunghezza_${i}">
-             <!-- Popolato via JS -->
-          </select>
-        </div>
-        
-        <!-- OPZIONI CLINICHE -->
+        <div class="form-group"><label>Linea Implantare:</label><select id="tipo_${i}" onchange="aggiornaDiametri(${i})"><option value="Tiger2">IDI Tiger 2</option><option value="Stone">IDI Stone</option></select></div>
+        <div class="form-group"><label>Diametro (mm):</label><select id="diametro_${i}" onchange="aggiornaLunghezze(${i})"></select></div>
+        <div class="form-group"><label>Lunghezza (mm):</label><select id="lunghezza_${i}"></select></div>
         <div class="form-group" style="display:flex; gap:20px;">
-           <div style="flex:1;">
-             <label>Post-Estrattivo?</label>
-             <select id="post_${i}"><option value="no">No</option><option value="si">Sì</option></select>
-           </div>
-           <div style="flex:1;">
-             <label>Carico Immediato?</label>
-             <select id="carico_${i}"><option value="no">No</option><option value="si">Sì</option></select>
-           </div>
+           <div style="flex:1;"><label>Post-Estrattivo?</label><select id="post_${i}"><option value="no">No</option><option value="si">Sì</option></select></div>
+           <div style="flex:1;"><label>Carico Immediato?</label><select id="carico_${i}"><option value="no">No</option><option value="si">Sì</option></select></div>
         </div>
-      </div>
-    `;
+      </div>`;
     container.appendChild(card);
-    // Inizializza i valori per questa card
     aggiornaDiametri(i);
   }
 }
 
-function toggleCard(btn) {
-  const content = btn.parentNode.nextElementSibling;
-  if (content.classList.contains('hidden')) {
-    content.classList.remove('hidden');
-    btn.textContent = '−';
-  } else {
-    content.classList.add('hidden');
-    btn.textContent = '+';
-  }
-}
-
-function toggleInputMode(i) {
-  const mode = document.querySelector(`input[name="mode_${i}"]:checked`).value;
-  const huInput = document.getElementById(`hu_${i}`);
-  const classInput = document.getElementById(`class_${i}`);
-  
-  if (mode === 'hu') {
-    huInput.style.display = 'block';
-    classInput.style.display = 'none';
-  } else {
-    huInput.style.display = 'none';
-    classInput.style.display = 'block';
-  }
-}
-
-function syncHuFromClass(i) {
-  const val = document.getElementById(`class_${i}`).value;
-  const huInput = document.getElementById(`hu_${i}`);
-  // Valori medi indicativi per la logica interna se l'utente sceglie la classe
-  if(val === 'D1') huInput.value = 1300;
-  if(val === 'D2') huInput.value = 1000;
-  if(val === 'D3') huInput.value = 600;
-  if(val === 'D4') huInput.value = 200;
-}
-
-// --- LOGICA DATI IDI EVOLUTION ---
-
-function aggiornaDiametri(i) {
-  const tipo = document.getElementById(`tipo_${i}`).value;
-  const sel = document.getElementById(`diametro_${i}`);
-  // Salva il valore corrente se esiste per tentare di mantenerlo dopo l'aggiornamento
-  const currentVal = sel.value;
-  
-  sel.innerHTML = '';
-  
-  let opts = [];
-  if (tipo === 'Tiger2') {
-    // Diametri Tiger 2
-    opts = ['3.8', '4.3', '4.8', '5.3'];
-  } else {
-    // Diametri Stone
-    opts = ['3.5', '3.75', '4.0', '5.0', '6.0'];
-  }
-  
-  opts.forEach(d => {
-    sel.innerHTML += `<option value="${d}">${d}</option>`;
-  });
-  
-  // Se il valore precedente esiste ancora nella nuova lista, mantienilo
-  if (opts.includes(currentVal)) {
-      sel.value = currentVal;
-  }
-  
-  aggiornaLunghezze(i);
-}
-
-function aggiornaLunghezze(i) {
-  const tipo = document.getElementById(`tipo_${i}`).value;
-  const diametro = document.getElementById(`diametro_${i}`).value;
-  const sel = document.getElementById(`lunghezza_${i}`);
-  sel.innerHTML = '';
-  
-  let lens = [];
-  
-  if (tipo === 'Tiger2') {
-      // LOGICA TIGER 2
-      if (['4.8', '5.3'].includes(diametro)) {
-          lens = ['8', '10', '12', '14'];
-      } else if (['3.8', '4.3'].includes(diametro)) {
-          lens = ['8', '10', '12', '14', '15.5', '17'];
-      } else {
-          lens = ['8', '10', '12', '14']; // Fallback
-      }
-  } else {
-      // LOGICA STONE (Verificata con le immagini)
-      if (diametro === '3.5') {
-          // Ø 3.5: arriva fino a 15.5 (no 17)
-          lens = ['8', '10', '12', '14', '15.5'];
-      } else if (['3.75', '4.0'].includes(diametro)) {
-          // Ø 3.75 e 4.0: completi fino a 17
-          lens = ['8', '10', '12', '14', '15.5', '17'];
-      } else if (['5.0', '6.0'].includes(diametro)) {
-          // Ø 5.0 e 6.0: solo fino a 14
-          lens = ['8', '10', '12', '14'];
-      } else {
-          // Fallback generico
-          lens = ['8', '10', '12', '14'];
-      }
-  }
-  
-  lens.forEach(l => {
-    sel.innerHTML += `<option value="${l}">${l}</option>`;
-  });
-}
-
-// --- ELABORAZIONE LOGICA ---
-
 function elabora() {
-  const nome = document.getElementById('nome').value;
+  const nome = document.getElementById('nome').value.trim();
   const num = document.getElementById('impianti').value;
-  
-  if (!num) { alert("Seleziona numero impianti"); return; }
-  
-  let html = `<h2 style="text-align:center;">Protocollo per ${nome || 'Paziente'}</h2>`;
-  
+  let errors = [];
+
+  if (!nome) errors.push("Manca Nome e Cognome del Paziente.");
+  if (!num) errors.push("Numero di impianti non selezionato.");
+
+  if (num) {
+      for (let i = 0; i < num; i++) {
+          const dente = document.getElementById(`dente_${i}`).value;
+          const hu = document.getElementById(`hu_${i}`).value;
+          if (!dente) errors.push(`Impianto ${i+1}: Posizione Dente mancante.`);
+          if (!hu) errors.push(`Impianto ${i+1}: Densità Ossea mancante.`);
+      }
+  }
+
+  if (errors.length > 0) {
+      const list = document.getElementById('validation-list');
+      list.innerHTML = "";
+      errors.forEach(err => {
+          const li = document.createElement('li');
+          li.textContent = err;
+          list.appendChild(li);
+      });
+      document.getElementById('validation-overlay').style.display = 'flex';
+      return;
+  }
+
+  let html = `<h2 style="text-align:center;">Protocollo per ${nome}</h2>`;
   for (let i = 0; i < num; i++) {
     const dente = document.getElementById(`dente_${i}`).value;
     const hu = parseInt(document.getElementById(`hu_${i}`).value);
     const tipo = document.getElementById(`tipo_${i}`).value;
-    const diametro = document.getElementById(`diametro_${i}`).value;
+    const diam = document.getElementById(`diametro_${i}`).value;
     const lungh = document.getElementById(`lunghezza_${i}`).value;
     const carico = document.getElementById(`carico_${i}`).value;
     
-    // Determina la classe ossea per visualizzazione
-    let densitaText = "";
-    let densitaColor = "";
-    if (hu > 1150) { densitaText = "D1 (Osso Duro)"; densitaColor = "#d63031"; } // Rosso
-    else if (hu >= 850) { densitaText = "D2 (Osso Medio/Duro)"; densitaColor = "#e17055"; } // Arancio scuro
-    else if (hu >= 400) { densitaText = "D3 (Osso Tenero)"; densitaColor = "#fdcb6e"; } // Giallo/Arancio
-    else { densitaText = "D4 (Osso Molto Tenero)"; densitaColor = "#00b894"; } // Verde
-
-    // --- QUI ANDRÀ LA TUA LOGICA DAI PDF ---
-    // Passiamo il parametro carico e dente alla funzione
-    let protocollo = calcolaProtocollo(tipo, diametro, hu, carico, dente);
+    let dTxt = "", dCol = "", dKey = "";
+    if (hu > 1150) { dTxt = "D1 (Osso Duro)"; dCol = "#d63031"; dKey="D1"; } 
+    else if (hu >= 850) { dTxt = "D2 (Osso Medio/Duro)"; dCol = "#e17055"; dKey="D2"; } 
+    else if (hu >= 400) { dTxt = "D3 (Osso Tenero)"; dCol = "#fdcb6e"; dKey="D3"; } 
+    else { dTxt = "D4 (Osso Molto Tenero)"; dCol = "#00b894"; dKey="D4"; } 
     
-    // BADGE DEDOTTO
-    let deducedBadge = "";
-    if (protocollo.isDeduced) {
-        deducedBadge = `<span class="badge-deduced">⚠️ PROTOCOLLO DEDOTTO</span>`;
-    }
-
-    html += `
-      <div class="result-row" style="display: grid; grid-template-columns: 1fr 1px 1fr; gap: 20px; align-items:start;">
-         <div>
-            <div class="dente">Dente ${dente}</div>
-            <div class="densita" style="color:${densitaColor}">${densitaText}</div>
-            <div class="result-block"><strong>Impianto Selezionato:</strong> IDI ${tipo} Ø${diametro} L${lungh}</div>
-            <div class="result-block"><strong>Carico Immediato:</strong> ${carico.toUpperCase()}</div>
+    const arcata = getArcata(dente);
+    const dbKey = genKey(tipo, diam, dKey, carico, arcata);
+    const prot = protocolDB[dbKey] || { seq: "N/D", note: "", deduced: false };
+    let badge = prot.deduced ? `<span class="badge-deduced">⚠️ PROTOCOLLO DEDOTTO</span>` : "";
+    
+    html += `<div class="result-row" style="display: grid; grid-template-columns: 1fr 1px 1fr; gap: 20px; align-items:start;">
+         <div><div class="dente">Dente ${dente}</div><div class="densita" style="color:${dCol}">${dTxt}</div>
+            <div class="result-block"><strong>Impianto:</strong> ${tipo} Ø${diam} L${lungh}</div>
+            <div class="result-block"><strong>Carico:</strong> ${carico === 'si' ? 'IMMEDIATO' : 'DIFFERITO'}</div>
             <hr style="border:0; border-top:1px solid #ddd; margin:10px 0;">
-            <div class="result-block" style="background:white; padding:10px; border-radius:5px; border:1px solid #eee;">
-               ${deducedBadge}
-               <br><strong>SEQUENZA FRESE CONSIGLIATA:</strong><br><br>
-               ${protocollo.fresa}
-            </div>
-            <div class="result-block"><strong>Note Cliniche:</strong><br> ${protocollo.note}</div>
-         </div>
-         
-         <div style="background:#ccc; height:100%;"></div>
-         
-         <div style="text-align:center;">
-            <!-- Placeholder Immagine -->
-            <div class="img-placeholder">
-               <span style="font-size:30px;">🦷</span>
-               <strong>${tipo} Ø${diametro}</strong>
-               <p style="font-size:11px; margin-top:5px;">Immagine di riferimento</p>
-            </div>
-            <button onclick="openTechModal('${tipo}', '${diametro}')" style="margin-top:10px; background:#008080; color:white; font-size:12px; padding:5px;">
-               📄 Scheda Tecnica ${tipo}
-            </button>
-         </div>
-      </div>
-    `;
+            <div class="result-block" style="background:white; padding:10px; border-radius:5px; border:1px solid #eee;">${badge}<br><strong>SEQUENZA FRESE:</strong><br><br>${prot.seq}</div>
+            <div class="result-block"><strong>Note:</strong><br> ${prot.note}</div>
+         </div><div style="background:#ccc; height:100%;"></div>
+         <div style="text-align:center;"><div class="img-placeholder"><span style="font-size:30px;">🦷</span><strong>${tipo} Ø${diam}</strong><p style="font-size:11px; margin-top:5px;">${tipo === 'Tiger2' && diam === '3.8' ? `<img src="Tiger2_3.8.png" onerror="this.style.display='none'" style="max-width:100%">` : 'Immagine di riferimento'}</p></div>
+            <button onclick="openTechModal('${tipo}', '${diam}')" style="margin-top:10px; background:#008080; color:white; font-size:12px; padding:5px;">📄 Scheda Tecnica</button></div></div>`;
   }
-  
   document.getElementById('output').innerHTML = html;
   document.getElementById('output').scrollIntoView({behavior:'smooth'});
 }
 
-// Funzione helper per identificare l'arcata
+function toggleCard(btn) {
+  const content = btn.parentNode.nextElementSibling;
+  if (content.classList.contains('hidden')) { content.classList.remove('hidden'); btn.textContent = '−'; }
+  else { content.classList.add('hidden'); btn.textContent = '+'; }
+}
+function toggleInputMode(i) {
+  const mode = document.querySelector(`input[name="mode_${i}"]:checked`).value;
+  const huIn = document.getElementById(`hu_${i}`);
+  const clIn = document.getElementById(`class_${i}`);
+  if (mode === 'hu') { huIn.style.display = 'block'; clIn.style.display = 'none'; }
+  else { huIn.style.display = 'none'; clIn.style.display = 'block'; }
+}
+function syncHuFromClass(i) {
+  const val = document.getElementById(`class_${i}`).value;
+  const huIn = document.getElementById(`hu_${i}`);
+  if(val === 'D1') huIn.value = 1300; if(val === 'D2') huIn.value = 1000; if(val === 'D3') huIn.value = 600; if(val === 'D4') huIn.value = 200;
+}
+function aggiornaDiametri(i) {
+  const t = document.getElementById(`tipo_${i}`).value;
+  const sel = document.getElementById(`diametro_${i}`);
+  const cur = sel.value;
+  sel.innerHTML = '';
+  let opts = (t === 'Tiger2') ? ['3.8', '4.3', '4.8', '5.3'] : ['3.5', '3.75', '4.0', '5.0', '6.0'];
+  opts.forEach(d => { sel.innerHTML += `<option value="${d}">${d}</option>`; });
+  if(opts.includes(cur)) sel.value = cur;
+  aggiornaLunghezze(i);
+}
+function aggiornaLunghezze(i) {
+  const t = document.getElementById(`tipo_${i}`).value;
+  const d = document.getElementById(`diametro_${i}`).value;
+  const sel = document.getElementById(`lunghezza_${i}`);
+  sel.innerHTML = '';
+  let l = [];
+  if (t === 'Tiger2') {
+      if (d === '4.8' || d === '5.3') l = ['8', '10', '12', '14'];
+      else l = ['8', '10', '12', '14', '15.5', '17'];
+  } else {
+      if (d === '3.5') l = ['8', '10', '12', '14', '15.5'];
+      else if (d === '3.75' || d === '4.0') l = ['8', '10', '12', '14', '15.5', '17'];
+      else l = ['8', '10', '12', '14'];
+  }
+  l.forEach(v => { sel.innerHTML += `<option value="${v}">${v}</option>`; });
+}
+
 function getArcata(dente) {
-    // Quadranti 1 e 2 sono Mascella (Superiore)
-    // Quadranti 3 e 4 sono Mandibola (Inferiore)
-    const quadrante = Math.floor(parseInt(dente) / 10);
-    if (quadrante === 1 || quadrante === 2) return 'mascella';
-    if (quadrante === 3 || quadrante === 4) return 'mandibola';
+    const q = Math.floor(parseInt(dente) / 10);
+    if (q === 1 || q === 2) return 'mascella';
+    if (q === 3 || q === 4) return 'mandibola';
     return null;
 }
 
-// --- FUNZIONE CUORE (LOGICA AGGIORNATA DA PDF) ---
-function calcolaProtocollo(tipo, diametro, hu, carico, dente) {
-  // Start comune aggiornato con Fresa Lettore
-  let sequenza = "Start: Fresa Lanceolata &rarr; Fresa Ø2.3 &rarr; Py 3.0 &rarr; <strong style='color:#8e44ad;'>Fresa Lettore</strong>";
-  let note = "";
-  let isDeduced = false;
-  
-  // Identifica Arcata
-  const arcata = getArcata(dente); // 'mascella' o 'mandibola'
+function genKey(tipo, diam, dens, car, jaw) {
+    return tipo + '_' + diam + '_' + dens + '_' + car + '_' + jaw;
+}
 
-  // ===================== LOGICA STONE =====================
-  if (tipo === 'Stone') {
-      
-      // LOGICA DEDOTTA PER CARICO IMMEDIATO STONE
-      if (carico === 'si') {
-          isDeduced = true; // Flag Dedotto Attivo
-          let warningCarico = "<br><br><strong style='color:#e67e22; background:#fff3e0; padding:2px;'>⚡ PROTOCOLLO DEDOTTO PER CARICO IMMEDIATO:</strong> Sottopreparazione e Omissione Maschiatura per massimizzare il torque (>35 Ncm).";
-          
-          if (diametro === '3.5') {
-              if (hu < 400) note = "<strong style='color:red;'>⚠️ SCONSIGLIATO IN D4:</strong> Stone 3.5 non indicato in osso D4 per carico immediato.";
-              else if (hu < 850) { sequenza += " &rarr; Fermarsi alla Fresa Ø 2.8 (No T 3.5)"; note = "Sottopreparazione marcata (stop a 2.8) per stabilità in D3." + warningCarico; }
-              else if (hu < 1150) { sequenza += " &rarr; Fresa Ø 3.0 (No T 3.5)"; note = "Stop a 3.0 per frizione in D2." + warningCarico; }
-              else { sequenza += " &rarr; Fresa Ø 3.0 &rarr; T 3.5 (NO Maschiatore)"; note = "Preparazione standard D1 ma <strong>SENZA Maschiatura</strong>." + warningCarico; }
-          }
-          else if (['3.75', '4.0'].includes(diametro)) {
-              if (hu < 400) { sequenza += " &rarr; Fermarsi alla Fresa Ø 3.0"; note = "Stop a 3.0 per cercare stabilità in D4 (valutare Stone 4.0)." + warningCarico; }
-              else if (hu < 850) { sequenza += " &rarr; Fresa Ø 3.0 (No T 4.0)"; note = "Sottopreparazione D3." + warningCarico; }
-              else if (hu < 1150) { sequenza += " &rarr; Fresa Ø 3.2 (No T 4.0)"; note = "Sottopreparazione D2." + warningCarico; }
-              else { sequenza += " &rarr; Fresa Ø 3.4 &rarr; T 4.0 (NO Maschiatore)"; note = "Preparazione D1 standard ma <strong>SENZA Maschiatura</strong>." + warningCarico; }
-          }
-          else if (diametro === '5.0') {
-              if (hu < 400) { sequenza += " &rarr; Fresa Ø 3.4 (Stop anticipato)"; note = "Stop anticipato a 3.4 per stabilità in D4." + warningCarico; }
-              else if (hu < 850) { sequenza += " &rarr; Fresa Ø 3.8 &rarr; Fresa Ø 4.0 (No T 5.0)"; note = "Sottopreparazione D3." + warningCarico; }
-              else { sequenza += " &rarr; Py 4.8 &rarr; Fresa Ø 4.8 &rarr; T 5.0 (NO Maschiatore)"; note = "Uso Stone 5.0 in D1/D2 senza maschiatura (invece di switch Aries)." + warningCarico; }
-          }
-          else { // Ø 6.0
-              sequenza += " &rarr; Protocollo Stone 5.0 + Fresa Ø 5.3 (Stimato)";
-              note = "Protocollo dedotto per Ø 6.0 immediato." + warningCarico;
-          }
-          return { fresa: sequenza, note: note, isDeduced: true };
-      }
+function getDefaultProtocolData(tipo, diametro, density, carico, arcata) {
+    let sequenza = "Start: Fresa Lanceolata &rarr; Fresa Ø2.3 &rarr; Py 3.0 &rarr; <strong style='color:#8e44ad;'>Fresa Lettore</strong>";
+    let note = "";
+    let isDeduced = false;
+    let warningCarico = "";
+    
+    if (carico === 'si') { 
+        warningCarico = "<br><br><strong style='color:#e67e22; background:#fff3e0; padding:2px;'>⚡ CARICO IMMEDIATO:</strong> Sottopreparazione consigliata."; 
+    }
 
-      // --- LOGICA STONE CARICO DIFFERITO (STANDARD) ---
-      
-      // Controllo Stone 6.0 (DEDOTTO anche in Differito)
-      if (diametro === '6.0') {
-          isDeduced = true; // Dedotto
-          sequenza = "Start &rarr; ... Protocollo Stone 5.0 ... &rarr; Fresa Ø 5.3 (Stimato)";
-          note = "Protocollo dedotto (estrapolato da Ø 5.0). Valutare densità.";
-          return { fresa: sequenza, note: note, isDeduced: true };
-      }
-
-      // ... (Logica Stone Differito Standard rimane invariata ma ritorna isDeduced: false) ...
-      if (diametro === '3.5') {
-          if (hu < 400) { // D4
-              sequenza += "<br>&darr;<br><strong>Fresa T 3.5</strong>";
-              note = "<strong style='color:red;'>⚠️ SCONSIGLIATO IN D4:</strong> Il protocollo indica 'Sconsigliato' per Stone Ø 3.5 in osso D4.";
-          } else if (hu < 850) { // D3
-              sequenza += "<br>&darr;<br>Fresa Ø 2.8<br>&darr;<br><strong>Fresa T 3.5</strong>";
-              note = "Protocollo D3 per Stone Ø 3.5.";
-          } else if (hu < 1150) { // D2
-              sequenza += "<br>&darr;<br>Fresa Ø 3.0<br>&darr;<br><strong>Fresa T 3.5</strong>";
-              note = "Protocollo D2 per Stone Ø 3.5.";
-          } else { // D1
-              sequenza += "<br>&darr;<br>Fresa Ø 3.0<br>&darr;<br>Fresa T 3.5<br>&darr;<br><strong>Maschiatore M 3.4</strong>";
-              note = "Protocollo D1 per Stone Ø 3.5. <strong>Obbligatorio Maschiatore</strong>.";
-          }
-      }
-      else if (['3.75', '4.0'].includes(diametro)) {
-          if (hu < 400) { // D4
-              sequenza += "<br>&darr;<br><strong>Fresa T 4.0</strong>";
-              if (diametro === '3.75') note = "⚠️ <strong>Attenzione D4:</strong> Consigliato Stone Ø 4.0.";
-              else note = "Protocollo D4 ottimale per Stone Ø 4.0.";
-          }
-          else if (hu < 850) { // D3
-              sequenza += "<br>&darr;<br>Fresa Ø 3.0<br>&darr;<br><strong>Fresa T 4.0</strong>";
-              note = "Protocollo standard per Stone Ø 3.75/4.0 in D3.";
-          }
-          else if (hu < 1150) { // D2
-              sequenza += "<br>&darr;<br>Fresa Ø 3.2<br>&darr;<br><strong>Fresa T 4.0</strong>";
-              note = "Protocollo standard per Stone Ø 3.75/4.0 in D2.";
-          }
-          else { // D1
-              sequenza += "<br>&darr;<br>Fresa Ø 3.4<br>&darr;<br>Fresa T 4.0<br>&darr;<br><strong>Maschiatore M 3.6</strong>";
-              note = "Protocollo D1. <strong>Obbligatorio Maschiatore</strong>.";
-          }
-      }
-      else if (diametro === '5.0') {
-          if (hu < 400) { // D4
-              sequenza += "<br>&darr;<br>Fresa Ø 3.4<br>&darr;<br>Py 3.8<br>&darr;<br>Fresa Ø 3.8<br>&darr;<br><strong>Fresa T 5.0</strong>";
-              note = "Protocollo Stone Ø 5.0 in D4.";
-          }
-          else if (hu < 850) { // D3
-              sequenza += "<br>&darr;<br>Fresa Ø 3.4<br>&darr;<br>Py 3.8<br>&darr;<br>Fresa Ø 4.0<br>&darr;<br>Fresa T 5.0<br>&darr;<br><strong>Maschiatore M 4.3</strong>";
-              note = "Protocollo Stone Ø 5.0 in D3. Prevede maschiatura M 4.3.";
-          }
-          else if (hu < 1150) { // D2
-              sequenza += "<br>&darr;<br>Py 3.8<br>&darr;<br>Py 4.8<br>&darr;<br>Fresa Ø 4.8<br>&darr;<br><strong>Fresa T 5.0</strong>";
-              note = "⚠️ <strong>Attenzione D2:</strong> In osso D2 il protocollo consiglia di virare su <strong>Aries Ø 5.0</strong> per una gestione migliore della densità.";
-          }
-          else { // D1
-              sequenza += "<br>&darr;<br>Py 3.8<br>&darr;<br>Py 4.8<br>&darr;<br>Fresa Ø 4.8<br>&darr;<br>Fresa T 5.0<br>&darr;<br><strong>Maschiatore M 5.0</strong>";
-              note = "⚠️ <strong>Attenzione D1:</strong> In osso D1 il protocollo consiglia di virare su <strong>Aries Ø 5.0</strong> con maschiatura.";
-          }
-      }
-  } 
-  
-  // ===================== LOGICA TIGER 2 =====================
-  else if (tipo === 'Tiger2') {
-     
-     // --- LOGICA TIGER 2 Ø 3.8 ---
-     if (diametro === '3.8') {
-         if (carico === 'si') {
-            isDeduced = true; // DEDOTTO
-            let warningCarico = "<br><br><strong style='color:#e67e22; background:#fff3e0; padding:2px;'>⚡ PROTOCOLLO DEDOTTO PER CARICO IMMEDIATO:</strong> Sottopreparazione per massimizzare il torque.";
-            if (hu < 400) { // D4
-                 sequenza = "Start &rarr; Pilot Ø2.0 &rarr; Fresa Ø2.3";
-                 if (arcata === 'mascella') sequenza += " &rarr; <strong>Testa Ø 3.5</strong>";
-                 else sequenza += " &rarr; <strong>Testa Ø 4.0</strong>";
-                 note = "Protocollo D4 per Tiger 3.8 Carico Immediato. Sottopreparazione per stabilità." + warningCarico;
-            } else { // D3-D1
-                 sequenza = "Start &rarr; Pilot Ø2.0 &rarr; Fresa Ø2.3";
-                 note = "⚠️ <strong>Attenzione (Carico Immediato):</strong> Il protocollo suggerisce di virare su <strong>Aries Ø 3.4</strong> per garantire stabilità.";
-            }
-         } 
-         else {
-             // Carico Differito (Standard)
-             sequenza = "Start &rarr; Pilot Ø2.0 &rarr; Fresa Ø2.3";
-             if (hu >= 1150) { // D1
-                 sequenza += " &rarr; Fresa Ø3.0"; 
-                 if (arcata === 'mascella') { sequenza += " &rarr; Fresa Ø3.2 &rarr; <strong>Testa Ø 4.0</strong>"; note = "Protocollo D1 Mascella."; }
-                 else { sequenza += " &rarr; Fresa Ø3.4 &rarr; <strong>Testa Ø 4.0</strong>"; note = "Protocollo D1 Mandibola."; }
-             } else if (hu >= 850) { // D2
-                 sequenza += " &rarr; Fresa Ø2.8"; 
-                 if (arcata === 'mascella') { sequenza += " &rarr; Fresa Ø3.0 &rarr; <strong>Testa Ø 4.0</strong>"; note = "Protocollo D2 Mascella."; }
-                 else { sequenza += " &rarr; Fresa Ø3.2 &rarr; <strong>Testa Ø 4.0</strong>"; note = "Protocollo D2 Mandibola."; }
-             } else if (hu >= 400) { // D3
-                 if (arcata === 'mascella') { sequenza += " &rarr; Fresa Ø2.8 &rarr; <strong>Testa Ø 3.7</strong>"; note = "Protocollo D3 Mascella."; }
-                 else { sequenza += " &rarr; Fresa Ø3.0 &rarr; <strong>Testa Ø 4.0</strong>"; note = "Protocollo D3 Mandibola."; }
-             } else { // D4
-                 if (arcata === 'mascella') { sequenza += " &rarr; <strong>Testa Ø 3.5</strong>"; note = "Protocollo D4 Mascella."; }
-                 else { sequenza += " &rarr; <strong>Testa Ø 4.0</strong>"; note = "Protocollo D4 Mandibola."; }
-             }
-         }
-     }
-
-     // --- LOGICA TIGER 2 Ø 4.3 ---
-     else if (diametro === '4.3') {
+    // --- LOGICA STONE ---
+    if (tipo === 'Stone') {
         if (carico === 'si') {
-            // Questo NON è dedotto, ho la scheda!
-            isDeduced = false;
-            if (hu < 400) { // D4
-                 sequenza = "Start &rarr; Pilot Ø2.0 &rarr; Fresa Ø2.3"; // Re-initialize start for Tiger
-                 sequenza += "<br>&darr;<br>Fresa Ø 3.0<br>&darr;<br><strong>Fresa T 4.3</strong>";
-                 note = "Protocollo D4 per Tiger 4.3 Carico Immediato.";
-            } else { // D3-D1
-                 sequenza = "Start &rarr; Pilot Ø2.0 &rarr; Fresa Ø2.3"; // Re-initialize start for Tiger
-                 sequenza += "<br>&darr;<br>Fresa Ø 3.0/3.2/3.4";
-                 note = "⚠️ <strong>Attenzione (Carico Immediato):</strong> In osso > D4 il protocollo suggerisce di virare su <strong>Aries Ø 3.75</strong>.";
+            isDeduced = true;
+            if (diametro === '3.5') {
+                if (density === 'D4') { note = "<strong style='color:red;'>⚠️ SCONSIGLIATO IN D4</strong>"; }
+                else if (density === 'D3') { sequenza += " &rarr; Stop Fresa Ø 2.8"; note = "Sottopreparazione marcata." + warningCarico; }
+                else if (density === 'D2') { sequenza += " &rarr; Fresa Ø 3.0"; note = "Stop a 3.0." + warningCarico; }
+                else { sequenza += " &rarr; Fresa Ø 3.0 &rarr; T 3.5"; note = "NO Maschiatura." + warningCarico; }
+            } else if (['3.75', '4.0'].includes(diametro)) {
+                if (density === 'D4') { sequenza += " &rarr; Stop Fresa Ø 3.0"; note = "Stop a 3.0." + warningCarico; }
+                else if (density === 'D3') { sequenza += " &rarr; Fresa Ø 3.0"; note = "Sottopreparazione D3." + warningCarico; }
+                else if (density === 'D2') { sequenza += " &rarr; Fresa Ø 3.2"; note = "Sottopreparazione D2." + warningCarico; }
+                else { sequenza += " &rarr; Fresa Ø 3.4 &rarr; T 4.0"; note = "NO Maschiatura." + warningCarico; }
+            } else if (diametro === '5.0') {
+                 if (density === 'D4') { sequenza += " &rarr; Fresa Ø 3.4"; note = "Stop anticipato." + warningCarico; }
+                 else if (density === 'D3') { sequenza += " &rarr; Fresa Ø 4.0"; note = "Sottopreparazione." + warningCarico; }
+                 else { sequenza += " &rarr; Py 4.8 &rarr; Fresa Ø 4.8 &rarr; T 5.0"; note = "NO Maschiatura." + warningCarico; }
+            } else { 
+                 sequenza += " &rarr; Protocollo Stone 5.0 + Fresa Ø 5.3"; note = "Dedotto." + warningCarico;
             }
         } else {
-            // Carico Differito (Standard)
-            sequenza = "Start &rarr; Pilot Ø2.0 &rarr; Fresa Ø2.3";
-            if (hu < 400) { // D4
-                if (arcata === 'mascella') { sequenza += " &rarr; <strong>Testa Ø 4.0</strong>"; note = "Protocollo D4 Mascella."; }
-                else { sequenza += " &rarr; Fresa Ø 2.8 &rarr; <strong>Testa Ø 4.3</strong>"; note = "Protocollo D4 Mandibola."; }
-            } else if (hu < 850) { // D3
-                if (arcata === 'mascella') { sequenza += " &rarr; Fresa Ø 3.0 &rarr; <strong>Testa Ø 4.0</strong>"; note = "Protocollo D3 Mascella."; }
-                else { sequenza += " &rarr; Fresa Ø 3.2 &rarr; <strong>Testa Ø 4.3</strong>"; note = "Protocollo D3 Mandibola."; }
-            } else if (hu < 1150) { // D2
-                sequenza += " &rarr; Fresa Ø 2.8";
-                if (arcata === 'mascella') { sequenza += " &rarr; Fresa Ø 3.4 &rarr; <strong>Testa Ø 4.3</strong>"; note = "Protocollo D2 Mascella."; }
-                else { sequenza += " &rarr; Fresa Ø 3.6 &rarr; <strong>Testa Ø 4.3</strong>"; note = "Protocollo D2 Mandibola."; }
-            } else { // D1
-                sequenza += " &rarr; Fresa Ø 3.0";
-                if (arcata === 'mascella') { sequenza += " &rarr; Fresa Ø 4.2 &rarr; <strong>Testa Ø 4.3</strong>"; note = "Protocollo D1 Mascella. <strong style='color:red'>Sconsigliato</strong>."; }
-                else { sequenza += " &rarr; Fresa Ø 4.2 &rarr; <strong>Testa Ø 4.3</strong>"; note = "Protocollo D1 Mandibola. <strong style='color:red'>Sconsigliato</strong>."; }
+            // Stone Differito
+            if (diametro === '6.0') { isDeduced = true; sequenza = "Start &rarr; ... Protocollo Stone 5.0 ... &rarr; Fresa Ø 5.3"; note = "Dedotto da Ø 5.0."; }
+            else if (diametro === '3.5') {
+                if (density === 'D4') { sequenza += "<br>&darr;<br><strong>Fresa T 3.5</strong>"; note = "<strong style='color:red;'>⚠️ SCONSIGLIATO IN D4</strong>"; }
+                else if (density === 'D3') { sequenza += "<br>&darr;<br>Fresa Ø 2.8<br>&darr;<br><strong>Fresa T 3.5</strong>"; }
+                else if (density === 'D2') { sequenza += "<br>&darr;<br>Fresa Ø 3.0<br>&darr;<br><strong>Fresa T 3.5</strong>"; }
+                else { sequenza += "<br>&darr;<br>Fresa Ø 3.0<br>&darr;<br>Fresa T 3.5<br>&darr;<br><strong>Maschiatore M 3.4</strong>"; }
+            } else if (['3.75', '4.0'].includes(diametro)) {
+                if (density === 'D4') { sequenza += "<br>&darr;<br><strong>Fresa T 4.0</strong>"; if(diametro==='3.75') note="Consigliato Stone Ø 4.0"; }
+                else if (density === 'D3') { sequenza += "<br>&darr;<br>Fresa Ø 3.0<br>&darr;<br><strong>Fresa T 4.0</strong>"; }
+                else if (density === 'D2') { sequenza += "<br>&darr;<br>Fresa Ø 3.2<br>&darr;<br><strong>Fresa T 4.0</strong>"; }
+                else { sequenza += "<br>&darr;<br>Fresa Ø 3.4<br>&darr;<br>Fresa T 4.0<br>&darr;<br><strong>Maschiatore M 3.6</strong>"; }
+            } else if (diametro === '5.0') {
+                if (density === 'D4') { sequenza += "<br>&darr;<br>Fresa Ø 3.4<br>&darr;<br>Py 3.8<br>&darr;<br>Fresa Ø 3.8<br>&darr;<br><strong>Fresa T 5.0</strong>"; }
+                else if (density === 'D3') { sequenza += "<br>&darr;<br>Fresa Ø 3.4<br>&darr;<br>Py 3.8<br>&darr;<br>Fresa Ø 4.0<br>&darr;<br>Fresa T 5.0<br>&darr;<br><strong>Maschiatore M 4.3</strong>"; }
+                else if (density === 'D2') { sequenza += "<br>&darr;<br>Py 3.8<br>&darr;<br>Py 4.8<br>&darr;<br>Fresa Ø 4.8<br>&darr;<br><strong>Fresa T 5.0</strong>"; }
+                else { sequenza += "<br>&darr;<br>Py 3.8<br>&darr;<br>Py 4.8<br>&darr;<br>Fresa Ø 4.8<br>&darr;<br>Fresa T 5.0<br>&darr;<br><strong>Maschiatore M 5.0</strong>"; }
             }
         }
-     } 
-
-     // --- LOGICA TIGER 2 Ø 4.8 ---
-     else if (diametro === '4.8') {
-         if (carico === 'si') {
-             isDeduced = true; // DEDOTTO
-             let warningCarico = "<br><br><strong style='color:#e67e22; background:#fff3e0; padding:2px;'>⚡ PROTOCOLLO DEDOTTO PER CARICO IMMEDIATO:</strong> Sottopreparazione per massimizzare il torque.";
-             if (hu < 400) { // D4
-                 sequenza = "Start &rarr; Pilot 2.0 &rarr; Fresa 2.3 &rarr; Fresa 3.0";
-                 if (arcata === 'mascella') sequenza += " &rarr; <strong>Testa 4.3</strong>";
-                 else sequenza += " &rarr; <strong>Testa 4.8</strong>";
-                 note = "Protocollo D4 Immediato (Dedotto): Sottopreparazione." + warningCarico;
+    } 
+    // --- TIGER 2 ---
+    else {
+        sequenza = "Start &rarr; Pilot Ø2.0 &rarr; Fresa Ø2.3";
+        if (diametro === '3.8') {
+            if (carico === 'si') {
+                isDeduced = true;
+                if (density === 'D4') {
+                    if (arcata === 'mascella') sequenza += " &rarr; <strong>Testa Ø 3.5</strong>";
+                    else sequenza += " &rarr; <strong>Testa Ø 4.0</strong>";
+                    note = "Sottopreparazione D4." + warningCarico;
+                } else { note = "Valutare stabilità." + warningCarico; }
+            } else {
+                if (density === 'D1') {
+                    sequenza += " &rarr; Fresa Ø3.0";
+                    if (arcata === 'mascella') sequenza += " &rarr; Fresa Ø3.2 &rarr; <strong>Testa Ø 4.0</strong>";
+                    else sequenza += " &rarr; Fresa Ø3.4 &rarr; <strong>Testa Ø 4.0</strong>";
+                } else if (density === 'D2') {
+                    sequenza += " &rarr; Fresa Ø2.8";
+                    if (arcata === 'mascella') sequenza += " &rarr; Fresa Ø3.0 &rarr; <strong>Testa Ø 4.0</strong>";
+                    else sequenza += " &rarr; Fresa Ø3.2 &rarr; <strong>Testa Ø 4.0</strong>";
+                } else if (density === 'D3') {
+                    if (arcata === 'mascella') sequenza += " &rarr; Fresa Ø2.8 &rarr; <strong>Testa Ø 3.7</strong>";
+                    else sequenza += " &rarr; Fresa Ø3.0 &rarr; <strong>Testa Ø 4.0</strong>";
+                } else { 
+                    if (arcata === 'mascella') sequenza += " &rarr; <strong>Testa Ø 3.5</strong>";
+                    else sequenza += " &rarr; <strong>Testa Ø 4.0</strong>";
+                }
+            }
+        } else if (diametro === '4.3') {
+             if (carico === 'si') {
+                 if (density === 'D4') { sequenza += "<br>&darr;<br>Fresa Ø 3.0<br>&darr;<br><strong>Fresa T 4.3</strong>"; }
+                 else { sequenza += "<br>&darr;<br>Fresa Ø 3.0/3.2/3.4"; note = "Valutare stabilità. Sottopreparazione corpo consigliata."; }
              } else {
-                 sequenza = "Start &rarr; Pilot 2.0 &rarr; ...";
-                 note = "⚠️ <strong>Attenzione (Carico Immediato):</strong> In osso denso, considerare switch ad Aries o sottopreparazione marcata.";
+                 if (density === 'D4') {
+                    if (arcata === 'mascella') sequenza += " &rarr; <strong>Testa Ø 4.0</strong>";
+                    else sequenza += " &rarr; Fresa Ø 2.8 &rarr; <strong>Testa Ø 4.3</strong>";
+                 } else if (density === 'D3') {
+                    if (arcata === 'mascella') sequenza += " &rarr; Fresa Ø 3.0 &rarr; <strong>Testa Ø 4.0</strong>";
+                    else sequenza += " &rarr; Fresa Ø 3.2 &rarr; <strong>Testa Ø 4.3</strong>";
+                 } else if (density === 'D2') {
+                    sequenza += " &rarr; Fresa Ø 2.8";
+                    if (arcata === 'mascella') sequenza += " &rarr; Fresa Ø 3.4 &rarr; <strong>Testa Ø 4.3</strong>";
+                    else sequenza += " &rarr; Fresa Ø 3.6 &rarr; <strong>Testa Ø 4.3</strong>";
+                 } else { 
+                    sequenza += " &rarr; Fresa Ø 3.0";
+                    if (arcata === 'mascella') sequenza += " &rarr; Fresa Ø 4.2 &rarr; <strong>Testa Ø 4.3</strong>";
+                    else sequenza += " &rarr; Fresa Ø 4.2 &rarr; <strong>Testa Ø 4.3</strong>";
+                    note += " <strong style='color:red'>Sconsigliato in D1</strong>";
+                 }
              }
-         }
-         else {
-             // Carico Differito (Standard)
-             sequenza = "Start &rarr; Pilot 2.0 &rarr; Fresa 2.3";
-             if (hu < 400) { // D4
-                 if (arcata === 'mascella') { sequenza += " &rarr; Fresa 3.0 &rarr; <strong>Testa 4.3</strong>"; note = "Protocollo D4 Mascella."; }
-                 else { sequenza += " &rarr; Fresa 3.0 &rarr; Fresa 3.2 &rarr; <strong>Testa 4.8</strong>"; note = "Protocollo D4 Mandibola."; }
-             } else if (hu < 850) { // D3
-                 if (arcata === 'mascella') { sequenza += " &rarr; Fresa 3.0 &rarr; Fresa 3.4 &rarr; <strong>Testa 4.8</strong>"; note = "Protocollo D3 Mascella."; }
-                 else { sequenza += " &rarr; Fresa 3.0 &rarr; Fresa 3.6 &rarr; <strong>Testa 4.8</strong>"; note = "Protocollo D3 Mandibola."; }
-             } else if (hu < 1150) { // D2
-                 if (arcata === 'mascella') { sequenza += " &rarr; Fresa 3.2 &rarr; Fresa 4.0 &rarr; <strong>Testa 4.8</strong>"; note = "Protocollo D2 Mascella."; }
-                 else { sequenza += " &rarr; Fresa 3.2 &rarr; Fresa 4.2 &rarr; <strong>Testa 4.8</strong>"; note = "Protocollo D2 Mandibola."; }
-             } else { // D1
-                 sequenza += " &rarr; Fresa 3.4 &rarr; Fresa 4.6 &rarr; <strong>Testa 4.8</strong>";
-                 note = "<strong style='color:red'>Sconsigliato in D1.</strong>";
-             }
-         }
-     }
+        } else if (diametro === '4.8') {
+            if (carico === 'si') {
+                isDeduced = true;
+                if (density === 'D4') {
+                    sequenza += " &rarr; Fresa 3.0";
+                    if (arcata === 'mascella') sequenza += " &rarr; <strong>Testa 4.3</strong>";
+                    else sequenza += " &rarr; <strong>Testa 4.8</strong>";
+                    note = "Sottopreparazione." + warningCarico;
+                } else { note = "Valutare stabilità." + warningCarico; }
+            } else {
+                if (density === 'D4') {
+                    if (arcata === 'mascella') sequenza += " &rarr; Fresa 3.0 &rarr; <strong>Testa 4.3</strong>";
+                    else sequenza += " &rarr; Fresa 3.0 &rarr; Fresa 3.2 &rarr; <strong>Testa 4.8</strong>";
+                } else if (density === 'D3') {
+                    if (arcata === 'mascella') sequenza += " &rarr; Fresa 3.0 &rarr; Fresa 3.4 &rarr; <strong>Testa 4.8</strong>";
+                    else sequenza += " &rarr; Fresa 3.0 &rarr; Fresa 3.6 &rarr; <strong>Testa 4.8</strong>";
+                } else if (density === 'D2') {
+                    if (arcata === 'mascella') sequenza += " &rarr; Fresa 3.2 &rarr; Fresa 4.0 &rarr; <strong>Testa 4.8</strong>";
+                    else sequenza += " &rarr; Fresa 3.2 &rarr; Fresa 4.2 &rarr; <strong>Testa 4.8</strong>";
+                } else { 
+                    sequenza += " &rarr; Fresa 3.4 &rarr; Fresa 4.6 &rarr; <strong>Testa 4.8</strong>";
+                    note = "<strong style='color:red'>Sconsigliato in D1.</strong>";
+                }
+            }
+        } else if (diametro === '5.3') {
+            if (carico === 'si') {
+                isDeduced = true;
+                if (density === 'D4') {
+                    sequenza += " &rarr; Fresa 3.4";
+                    if (arcata === 'mascella') sequenza += " &rarr; <strong>Testa 4.8</strong>";
+                    else sequenza += " &rarr; <strong>Testa 5.3</strong>";
+                    note = "Sottopreparazione." + warningCarico;
+                } else { note = "Valutare stabilità." + warningCarico; }
+            } else {
+                if (density === 'D4') {
+                    if (arcata === 'mascella') sequenza += " &rarr; Fresa 3.4 &rarr; <strong>Testa 4.8</strong>";
+                    else sequenza += " &rarr; Fresa 3.4 &rarr; <strong>Testa 5.3</strong>";
+                } else if (density === 'D3') {
+                    if (arcata === 'mascella') sequenza += " &rarr; Fresa 3.4 &rarr; Fresa 3.6 &rarr; <strong>Testa 5.3</strong>";
+                    else sequenza += " &rarr; Fresa 3.4 &rarr; Fresa 3.8 &rarr; <strong>Testa 5.3</strong>";
+                } else if (density === 'D2') {
+                    if (arcata === 'mascella') sequenza += " &rarr; Fresa 3.6 &rarr; Fresa 4.0 &rarr; <strong>Testa 5.3</strong>";
+                    else sequenza += " &rarr; Fresa 3.6 &rarr; Fresa 4.2 &rarr; <strong>Testa 5.3</strong>";
+                } else { 
+                    sequenza += " &rarr; Fresa 3.8 &rarr; Fresa 5.0 &rarr; <strong>Testa 5.3</strong>";
+                    note = "<strong style='color:red'>Sconsigliato in D1.</strong>";
+                }
+            }
+        }
+    }
+    return { fresa: sequenza, note: note, isDeduced: isDeduced };
+}
 
-     // --- LOGICA TIGER 2 Ø 5.3 ---
-     else if (diametro === '5.3') {
-         if (carico === 'si') {
-             isDeduced = true; // DEDOTTO
-             let warningCarico = "<br><br><strong style='color:#e67e22; background:#fff3e0; padding:2px;'>⚡ PROTOCOLLO DEDOTTO PER CARICO IMMEDIATO:</strong> Sottopreparazione per massimizzare il torque.";
-             if (hu < 400) {
-                 sequenza = "Start &rarr; Pilot 2.0 &rarr; Fresa 2.3 &rarr; Fresa 3.4";
-                 if (arcata === 'mascella') sequenza += " &rarr; <strong>Testa 4.8</strong>";
-                 else sequenza += " &rarr; <strong>Testa 5.3</strong>";
-                 note = "Protocollo D4 Immediato (Dedotto): Sottopreparazione." + warningCarico;
-             } else {
-                 sequenza = "Start &rarr; ...";
-                 note = "⚠️ <strong>Attenzione (Carico Immediato):</strong> Considerare switch ad Aries o sottopreparazione.";
-             }
-         }
-         else {
-             // Carico Differito (Standard)
-             sequenza = "Start &rarr; Pilot 2.0 &rarr; Fresa 2.3";
-             if (hu < 400) { // D4
-                 if (arcata === 'mascella') { sequenza += " &rarr; Fresa 3.4 &rarr; <strong>Testa 4.8</strong>"; note = "Protocollo D4 Mascella."; }
-                 else { sequenza += " &rarr; Fresa 3.4 &rarr; <strong>Testa 5.3</strong>"; note = "Protocollo D4 Mandibola."; }
-             } else if (hu < 850) { // D3
-                 if (arcata === 'mascella') { sequenza += " &rarr; Fresa 3.4 &rarr; Fresa 3.6 &rarr; <strong>Testa 5.3</strong>"; note = "Protocollo D3 Mascella."; }
-                 else { sequenza += " &rarr; Fresa 3.4 &rarr; Fresa 3.8 &rarr; <strong>Testa 5.3</strong>"; note = "Protocollo D3 Mandibola."; }
-             } else if (hu < 1150) { // D2
-                 if (arcata === 'mascella') { sequenza += " &rarr; Fresa 3.6 &rarr; Fresa 4.0 &rarr; <strong>Testa 5.3</strong>"; note = "Protocollo D2 Mascella."; }
-                 else { sequenza += " &rarr; Fresa 3.6 &rarr; Fresa 4.2 &rarr; <strong>Testa 5.3</strong>"; note = "Protocollo D2 Mandibola."; }
-             } else { // D1
-                 sequenza += " &rarr; Fresa 3.8 &rarr; Fresa 5.0 &rarr; <strong>Testa 5.3</strong>";
-                 note = "<strong style='color:red'>Sconsigliato in D1.</strong>";
-             }
-         }
-     }
-  } 
-  
-  return { fresa: sequenza, note: note, isDeduced: isDeduced };
+// --- UTILS UI ---
+function checkPassword() {
+  const pwd = document.getElementById('password-input').value;
+  if (pwd === "Martina07") { 
+    document.getElementById('password-overlay').style.display = 'none';
+    document.getElementById('disclaimer-overlay').style.display = 'flex'; 
+  } else { alert('Password errata.'); document.getElementById('password-input').value = ""; }
+}
+function acceptDisclaimer() { document.getElementById('disclaimer-overlay').style.display = 'none'; }
+function openAdminLogin() { document.getElementById('admin-overlay').style.display = 'flex'; }
+function closeAdminLogin() { document.getElementById('admin-overlay').style.display = 'none'; document.getElementById('admin-password-input').value = ''; }
+function checkAdminPassword() {
+    const p = document.getElementById('admin-password-input').value;
+    if (p === 'admin123') { closeAdminLogin(); openAdminPanel(); } else { alert('Password Admin Errata'); }
+}
+function openAdminPanel() {
+    document.getElementById('admin-panel').style.display = 'block';
+    document.getElementById('admin-tipo').value = 'Tiger2';
+    renderAdminDiametri();
+}
+function closeAdminPanel() { document.getElementById('admin-panel').style.display = 'none'; }
+function renderAdminDiametri() {
+    const t = document.getElementById('admin-tipo').value;
+    const dSel = document.getElementById('admin-diametro');
+    dSel.innerHTML = '';
+    let opts = (t === 'Tiger2') ? ['3.8', '4.3', '4.8', '5.3'] : ['3.5', '3.75', '4.0', '5.0', '6.0'];
+    opts.forEach(o => { dSel.innerHTML += `<option value="${o}">${o}</option>`; });
+    renderAdminTable();
+}
+function renderAdminTable() {
+    const tipo = document.getElementById('admin-tipo').value;
+    const diam = document.getElementById('admin-diametro').value;
+    const tbody = document.getElementById('admin-table-body');
+    tbody.innerHTML = '';
+    const densities = ['D1', 'D2', 'D3', 'D4'];
+    const loads = ['no', 'si'];
+    const jaws = ['mascella', 'mandibola'];
+    densities.forEach(dens => {
+        loads.forEach(load => {
+            jaws.forEach(jaw => {
+                const key = genKey(tipo, diam, dens, load, jaw);
+                const data = protocolDB[key] || { seq: "N/D", note: "" };
+                const row = document.createElement('tr');
+                row.innerHTML = `<td><b>${dens}</b></td><td>${load === 'si' ? 'Immediato' : 'Differito'}</td><td>${jaw}</td>`;
+                const seqCell = document.createElement('td');
+                seqCell.innerHTML = `<div class="editable-cell" contenteditable="true" onblur="updateProtocol('${key}', 'seq', this)">${data.seq}</div>`;
+                row.appendChild(seqCell);
+                const noteCell = document.createElement('td');
+                noteCell.innerHTML = `<div class="editable-cell" contenteditable="true" onblur="updateProtocol('${key}', 'note', this)">${data.note}</div>`;
+                row.appendChild(noteCell);
+                tbody.appendChild(row);
+            });
+        });
+    });
+}
+function updateProtocol(key, field, el) {
+    if(!protocolDB[key]) protocolDB[key] = {};
+    protocolDB[key][field] = el.innerHTML; 
+}
+function saveAdminChanges() {
+    localStorage.setItem('idi_protocols_v1', JSON.stringify(protocolDB));
+    alert("Modifiche salvate con successo!");
+    closeAdminPanel();
+}
+function resetToFactorySettings() {
+    if(confirm("Sei sicuro di voler ripristinare i protocolli originali?")) {
+        localStorage.removeItem('idi_protocols_v1');
+        initDefaultProtocols();
+        renderAdminTable(); 
+        alert("Protocolli ripristinati.");
+    }
+}
+function openTechModal(tipo, diametro) {
+    const modal = document.getElementById('tech-modal');
+    document.getElementById('tech-title').innerText = `Scheda Tecnica: ${tipo} Ø ${diametro}`;
+    let content = "";
+    if (tipo === 'Stone') {
+        let col="", bd="", pd="";
+        if (diametro === '3.5') { col = "#f1c40f"; bd = "3.0 mm"; pd = "3.5 mm (Yellow)"; }
+        else if (diametro === '3.75') { col = "#3498db"; bd = "3.2 mm"; pd = "4.0 mm (Blue)"; }
+        else if (diametro === '4.0') { col = "#3498db"; bd = "3.2 mm"; pd = "4.0 mm (Blue)"; }
+        else if (diametro === '5.0') { col = "#2ecc71"; bd = "4.0 mm"; pd = "5.0 mm (Green)"; }
+        else if (diametro === '6.0') { col = "#e91e63"; bd = "5.0 mm"; pd = "6.0 mm (Pink)"; }
+        content = `<div style="margin-bottom:15px; border-left: 4px solid ${col}; padding-left:10px;"><p><strong>Caratteristiche:</strong> Inserto alloplastico versatile.</p><p><strong>Superficie:</strong> Osteorapid.</p></div>
+            <div class="tech-detail-row"><span class="tech-detail-label">Diametro Testa:</span> <span>${diametro} mm</span></div>
+            <div class="tech-detail-row"><span class="tech-detail-label">Diametro Corpo:</span> <span>${bd}</span></div>
+            <div class="tech-detail-row"><span class="tech-detail-label">Piattaforma:</span> <span style="color:${col}; font-weight:bold;">${pd}</span></div>`;
+    } else {
+        let col="#3498db", bd="", pd="4.0 mm (Blue)", hd=diametro; 
+        if (diametro === '3.8') { bd = "3.1 mm"; hd = "4.0 mm"; }
+        else if (diametro === '4.3') { bd = "3.6 mm"; hd = "4.3 mm"; }
+        else if (diametro === '4.8') { bd = "4.1 mm"; hd = "4.8 mm"; }
+        else if (diametro === '5.3') { col="#2ecc71"; bd = "4.6 mm"; hd = "5.3 mm"; pd="5.0 mm (Green)"; }
+        content = `<div style="margin-bottom:15px; border-left: 4px solid ${col}; padding-left:10px;"><p><strong>Caratteristiche:</strong> Ideale per osso D3/D4.</p><p><strong>Design:</strong> Spiralatura a doppio principio.</p></div>
+            <div class="tech-detail-row"><span class="tech-detail-label">Diametro Testa:</span> <span>${hd}</span></div>
+            <div class="tech-detail-row"><span class="tech-detail-label">Diametro Corpo:</span> <span>${bd}</span></div>
+            <div class="tech-detail-row"><span class="tech-detail-label">Piattaforma:</span> <span style="color:${col}; font-weight:bold;">${pd}</span></div>`;
+    }
+    document.getElementById('tech-body').innerHTML = content;
+    modal.style.display = 'flex';
+}
+function closeTechModal() { document.getElementById('tech-modal').style.display = 'none'; }
+function closeValidation() { document.getElementById('validation-overlay').style.display = 'none'; }
+function salvaDati() {
+  const nome = document.getElementById('nome').value || 'Paziente';
+  const num = document.getElementById('impianti').value;
+  if(!num) return;
+  let data = { paziente: nome, impianti: [] };
+  for(let i=0; i<num; i++){
+    data.impianti.push({
+      dente: document.getElementById(`dente_${i}`).value,
+      hu: document.getElementById(`hu_${i}`).value,
+      tipo: document.getElementById(`tipo_${i}`).value,
+      diametro: document.getElementById(`diametro_${i}`).value,
+      lunghezza: document.getElementById(`lunghezza_${i}`).value
+    });
+  }
+  const blob = new Blob([JSON.stringify(data)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `IDI_${nome}.json`; a.click();
+}
+function caricaDati(e) {
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = function(ev) {
+    try {
+        const d = JSON.parse(ev.target.result);
+        document.getElementById('nome').value = d.paziente;
+        document.getElementById('impianti').value = d.impianti.length;
+        creaCampiImpianti();
+        setTimeout(function() {
+           d.impianti.forEach(function(imp, i) {
+              document.getElementById(`dente_${i}`).value = imp.dente;
+              document.getElementById(`hu_${i}`).value = imp.hu;
+              document.getElementById(`tipo_${i}`).value = imp.tipo;
+              aggiornaDiametri(i);
+              document.getElementById(`diametro_${i}`).value = imp.diametro;
+              aggiornaLunghezze(i);
+              document.getElementById(`lunghezza_${i}`).value = imp.lunghezza;
+           });
+        }, 100);
+    } catch(err) { alert("Errore caricamento file."); }
+  };
+  r.readAsText(f);
+}
+async function esportaPDF() {
+  const out = document.getElementById('output');
+  if (!out.innerText.includes('Protocollo')) { alert("Elabora prima!"); return; }
+  try {
+      const canvas = await html2canvas(out, {scale:2});
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
+      const pdfW = pdf.internal.pageSize.getWidth();
+      const pdfH = pdf.internal.pageSize.getHeight();
+      const imgH = (canvas.height * pdfW) / canvas.width;
+      let hLeft = imgH; let pos = 0;
+      pdf.addImage(imgData, 'JPEG', 0, pos, pdfW, imgH); hLeft -= pdfH;
+      while (hLeft >= 0) { pos = hLeft - imgH; pdf.addPage(); pdf.addImage(imgData, 'JPEG', 0, pos, pdfW, imgH); hLeft -= pdfH; }
+      pdf.save('Protocollo_IDI_Evolution.pdf');
+  } catch(e) { alert("Errore PDF."); }
 }
 </script>
 </body>
